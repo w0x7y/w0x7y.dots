@@ -11,7 +11,8 @@ a removed line, a changed word and two new lines since the git index, and the cu
 needs vis `0.9` or a later git build, `git`, `fd` and `fzf`
 
 ```sh
-git clone https://github.com/w0x7y/w0x7y.vis ~/.config/vis
+git clone https://github.com/w0x7y/w0x7y.dots
+cp -r w0x7y.dots/vis ~/.config/
 ```
 
 language servers and formatters run from `$PATH`

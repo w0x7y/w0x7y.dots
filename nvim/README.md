@@ -20,7 +20,8 @@ my neovim config. one file per feature, [rime](https://github.com/w0x7y/rime) co
 needs neovim `0.12`+, git and a nerd font
 
 ```sh
-git clone https://github.com/w0x7y/w0x7y.nvim ~/.config/nvim
+git clone https://github.com/w0x7y/w0x7y.dots
+cp -r w0x7y.dots/nvim ~/.config/
 nvim
 ```
 
