@@ -1,0 +1,44 @@
+#!/usr/bin/env revo
+ cold: a tiny weather report, written for the readme screenshots
+!#
+
+#* a station either sent a temperature or stopped answering *#
+type Reading = {:temp, number} | {:offline, string}
+type Report = {:ok, string} | {:err, atom}
+
+#* one word for how cold it is, coldest first *#
+fn describe(degrees: number) -> string do
+  match degrees
+    | d when d <= -30 => "deadly"
+    | d when d <= -10 => "biting"
+    | d when d < 0 => "frosty"
+    | _ => "thawing"
+end
+
+fn average(xs: table) -> {:ok, number} | {:err, atom} do
+  if xs:len() == 0 return {:err, :NoData}
+  const sum = iter.reduce(xs, fn(a: number, b: number) a + b, 0)
+  {:ok, sum / xs:len()}
+end
+
+#* readings is a table of Reading *#
+fn report(readings: table) -> Report do
+  let temps = {}
+  let offline = 0
+  for r in readings do
+    match r
+      | {:temp, c} => temps:push(c)
+      | {:offline, _} => offline += 1
+  end
+
+  const avg = average(temps)?
+  {:ok, describe(avg)}
+end
+
+test "describe sorts the cold" do
+  expect_eq(describe(-40), "deadly")?
+  expect_eq(describe(-5), "frosty")?
+  expect_eq(describe(5), "thawing")?
+end
+
+print(report({{:temp, -12}, {:offline, "ridge"}, {:temp, -31}}))
