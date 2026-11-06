@@ -1,8 +1,10 @@
 -- vis-oil: edit a folder like a buffer, a port of oil.nvim. Copy this folder
--- next to your visrc.lua and require it by its path, e.g. require("vis-oil").
+-- next to your visrc.lua and map a key to open_parent, which opens the current
+-- file's folder, or the parent folder in an oil buffer:
 --
--- -        opens the current file's folder, or the parent folder in an oil buffer
--- <Enter>  opens the entry under the cursor
+--   vis:map(vis.modes.NORMAL, "-", require("vis-oil").open_parent)
+--
+-- <Enter> opens the entry under the cursor.
 -- One entry per line, folders end in /. Rename a line to rename the entry
 -- (sub/name moves it into sub), delete a line to delete it, add one to create
 -- a file, or a folder if it ends in /. :w lists the changes and asks first
@@ -306,7 +308,5 @@ vis.events.subscribe(vis.events.QUIT, function()
     os.remove(temp)
   end
 end)
-
-vis:map(vis.modes.NORMAL, "-", M.open_parent, "oil: open the folder of this file")
 
 return M

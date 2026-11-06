@@ -24,8 +24,7 @@ leader is `<space>`
 | key                       | does                                          |
 | ------------------------- | --------------------------------------------- |
 | `<leader>ff`              | find files, `:find foo` opens the best match  |
-| `<leader>e`               | file explorer                                 |
-| `-`                       | edit this file's folder as a buffer (oil)     |
+| `<leader>e`               | edit this file's folder as a buffer (oil)     |
 | `<leader>y` / `<leader>p` | copy the selection / paste, system clipboard  |
 | `<Tab>` / `<S-Tab>`       | indent / dedent the selection                 |
 | `S`                       | search                                        |
@@ -39,18 +38,16 @@ no `K`: the status line shows the cursor line's problem, and hover is `:lspc-hov
 
 ![<leader>ff finding config files](screenshots/find.png)
 
-![<leader>e exploring the config directory](screenshots/explore.png)
-
 ![<C-space> completing string.g](screenshots/complete.png)
 
-`<leader>ff`, `<leader>e` and `<C-space>` on the bottom line
+`<leader>ff` and `<C-space>` on the bottom line
 
 ### what's in it
 
 ~ rime or rime-frost, whichever `~/.local/state/rime/variant` says at startup\
 ~ relative line numbers, the cursor line shows its own\
 ~ the terminal's cursor changes shape with the mode, like neovim: a block in normal mode, a bar in insert mode, an underline in visual, replace and operator-pending mode\
-~ oil: `-` opens the folder as a buffer. rename a line to rename the file, `dd` to delete it, add a line to create one (end it in `/` for a folder), and `:w` lists the changes on the bottom line and asks before doing them. `<Enter>` opens an entry\
+~ oil: `<leader>e` opens the file's folder as a buffer, again for the folder above it. rename a line to rename the file, `dd` to delete it, add a line to create one (end it in `/` for a folder), and `:w` lists the changes on the bottom line and asks before doing them. `<Enter>` opens an entry\
 ~ format on save with stylua, clang-format, ruff, rustfmt, csharpier, prettier, zig fmt and revofmt, all at 2 spaces, and goimports (or gofmt) for Go, which indents with tabs\
 ~ diagnostics underline the problem in its color: red error, yellow warning, blue info, cyan hint\
 ~ git signs against the index, updated as you type: added lines and changed words get a tint, text removed from a line a red cell, and the line below removed lines a red number. the index is read on open and save, so a `git add` from a shell shows after the next save\

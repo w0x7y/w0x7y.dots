@@ -31,7 +31,8 @@ require("plugins/vis-autoclose")
 require("plugins/vis-colorizer")
 require("plugins/vis-gitsigns")
 require("plugins/vis-cursor")
-require("plugins/vis-modal").name = require("plugins/vis-oil").folder -- oil's folder, not its temp file
+local oil = require("plugins/vis-oil")
+require("plugins/vis-modal").name = oil.folder -- oil's folder, not its temp file
 require("config/lsp") -- before the keys: it unmaps lspc's <Space>e
 require("config/diagnostics")
 require("config/format")
@@ -69,9 +70,8 @@ local function find()
   open_from(fd .. " | vis-menu -b -i -p find")
 end
 
-vis:map(normal, " e", function()
-  open_from("vis-open -p explore -- . </dev/null")
-end, "File explorer")
+vis:map(normal, " e", oil.open_parent, "Edit this file's folder (oil)")
+vis:map(normal, "-", function() end, "Nothing") -- vis can't unmap its built-in - motion
 
 vis:map(normal, " ff", find, "Find a file")
 
