@@ -21,7 +21,7 @@ copy only the folders you want. each one's readme lists what it needs
 ~ [vis](vis/), vis with lsp, format on save, git signs and revo\
 ~ [ghostty](ghostty/), maple mono and a see-through background\
 ~ [tmux](tmux/), a plain bar on top and alt keys that skip the prefix\
-~ [fish](fish/), man pages through bat and only the aliases i use
+~ [fish](fish/), auto-closing brackets, man pages through bat and only the aliases i use
 
 ### layout
 
@@ -31,9 +31,9 @@ vis/       vis
 ghostty/   ghostty
 tmux/      tmux
 fish/      fish
-LICENSE    mit, for everything but the vis plugins below
+LICENSE    mit, for everything but the plugins below
 ```
 
-vis-lspc, vis-modal, vis-autoclose and vis-colorizer in `vis/plugins/` come from other people and keep their own licenses
+vis-lspc, vis-modal, vis-autoclose and vis-colorizer in `vis/plugins/`, and autopair in `fish/`, come from other people and keep their own licenses
 
 _license: [mit](./LICENSE)_
