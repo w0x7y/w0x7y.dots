@@ -8,7 +8,7 @@ a removed line, a changed word and two new lines since the git index, and the cu
 
 ### install
 
-needs vis `0.9` or a later git build, `git`, `fd` and `fzf`
+needs vis `0.9` or a later git build, `git`, `fd` and `fzf`. the cursor shapes need a build after `0.9`
 
 ```sh
 git clone https://github.com/w0x7y/w0x7y.dots
@@ -25,6 +25,7 @@ leader is `<space>`
 | ------------------------- | --------------------------------------------- |
 | `<leader>ff`              | find files, `:find foo` opens the best match  |
 | `<leader>e`               | file explorer                                 |
+| `-`                       | edit this file's folder as a buffer (oil)     |
 | `<leader>y` / `<leader>p` | copy the selection / paste, system clipboard  |
 | `<Tab>` / `<S-Tab>`       | indent / dedent the selection                 |
 | `S`                       | search                                        |
@@ -48,10 +49,13 @@ no `K`: the status line shows the cursor line's problem, and hover is `:lspc-hov
 
 ~ rime or rime-frost, whichever `~/.local/state/rime/variant` says at startup\
 ~ relative line numbers, the cursor line shows its own\
+~ the terminal's cursor changes shape with the mode, like neovim: a block in normal mode, a bar in insert mode, an underline in visual, replace and operator-pending mode\
+~ oil: `-` opens the folder as a buffer. rename a line to rename the file, `dd` to delete it, add a line to create one (end it in `/` for a folder), and `:w` lists the changes on the bottom line and asks before doing them. `<Enter>` opens an entry\
 ~ format on save with stylua, clang-format, ruff, rustfmt, csharpier, prettier, zig fmt and revofmt, all at 2 spaces, and goimports (or gofmt) for Go, which indents with tabs\
 ~ diagnostics underline the problem in its color: red error, yellow warning, blue info, cyan hint\
 ~ git signs against the index, updated as you type: added lines and changed words get a tint, text removed from a line a red cell, and the line below removed lines a red number. the index is read on open and save, so a `git add` from a shell shows after the next save\
-~ vis-lspc, vis-modal, vis-autoclose and vis-colorizer, copied into `plugins/`, their fixes marked `Local patch`. vis-gitsigns is our own, and so is `plugins/style-compat.lua`, which picks the style calls for vis 0.9 or a later build
+~ vis-lspc, vis-modal, vis-autoclose and vis-colorizer, copied into `plugins/`, their fixes marked `Local patch`. vis-gitsigns, vis-cursor and vis-oil are our own, and so is `plugins/style-compat.lua`, which picks the style calls for vis 0.9 or a later build\
+~ vis-cursor and vis-oil depend on nothing else here: copy the folder into any vis config and `require` it
 
 the status line: mode, file, the cursor line's problem, the file's totals and line:col
 
@@ -73,6 +77,7 @@ config/diagnostics.lua  diagnostics on the status line
 csharpier.json          csharpier's 2 space indent
 themes/                 rime and rime-frost
 lexers/revo.lua         revo highlighting
-plugins/                vis-lspc, vis-modal, vis-autoclose, vis-colorizer, vis-gitsigns, style-compat.lua
+plugins/                vis-lspc, vis-modal, vis-autoclose, vis-colorizer, vis-gitsigns,
+                        vis-cursor, vis-oil, style-compat.lua
 screenshots/            the pictures in this README
 ```

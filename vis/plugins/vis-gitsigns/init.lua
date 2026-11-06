@@ -1,7 +1,5 @@
--- vis-gitsigns: tints for what changed since the git index: an added line's
--- text, a changed line's new text, a cell where text was cut, and the number
--- of the line below removed lines. themes/rime.lua sets the colors
-require("vis")
+-- vis-gitsigns: tints what changed since the git index: added lines, changed
+-- words, cut text, and the number of the line below removed lines
 local style = require("plugins/style-compat")
 
 local M = {}
@@ -15,13 +13,11 @@ M.styles = {
 M.max_size = 1024 * 1024 -- bigger files get no signs
 M.max_edits = 400 -- a diff that needs more edits is shown as one change
 
--- One style id, defined again for each kind: vis copies a style into the
--- cells when it is applied
+-- One id, redefined per kind: applying a style copies it into the cells
 local STYLE = style.id(62)
 
--- By file path: base (the index's lines), and from the last diff: content,
--- lines, offsets (where each line starts), marks (by line: add, or change
--- and cut columns) and removed (lines below removed ones)
+-- By path: base (the index's lines) and the last diff's content, lines,
+-- offsets, marks (by line: add, or change and cut columns) and removed
 local state = {}
 
 -- The lines of a text and the byte offset each one starts at
@@ -40,8 +36,7 @@ local function split(text)
   end
 end
 
--- Myers' diff of two lists: the indices of a that were deleted and of b that
--- were inserted. nil when it takes more than limit edits
+-- Myers' diff: the deleted indices of a and inserted ones of b, nil past limit edits
 local function myers(a, b, limit)
   local n, m = #a, #b
   local v, trace = { [1] = 0 }, {}
@@ -83,8 +78,7 @@ local function myers(a, b, limit)
   end
 end
 
--- Walks a diff in order: calls hunk(first_b, last_b, deleted_a) for each run
--- of edits, with the range of b it inserted and how many of a it deleted
+-- Calls hunk(first_b, last_b, first_a, last_a) for each run of edits, in order
 local function hunks(n, m, deleted, inserted, hunk)
   local i, j = 1, 1
   while i <= n or j <= m do
@@ -108,7 +102,7 @@ local function hunks(n, m, deleted, inserted, hunk)
   end
 end
 
--- A line's tokens for the word diff: words, runs of spaces, single characters
+-- Tokens for the word diff: words, runs of spaces, single characters
 local function tokens(line)
   local list, starts = {}, {}
   local pos = 1
@@ -130,8 +124,7 @@ local function tokens(line)
   return list, starts
 end
 
--- What changed between two versions of a line: the column ranges of new text,
--- and the columns where text was removed without new text in its place
+-- A line's changes: column ranges of new text, and columns where text was only removed
 local function word_diff(old, new)
   local a = tokens(old)
   local b, starts = tokens(new)
@@ -157,7 +150,7 @@ local function word_diff(old, new)
   return changes, cuts
 end
 
--- Diffs a file's content against its base and keeps the marks
+-- Diffs content against the base into st's marks
 local function compute(st, content)
   local lines, offsets = split(content)
   local base, n, m = st.base, #st.base, #lines
@@ -211,7 +204,7 @@ local function quote(s)
   return "'" .. s:gsub("'", "'\\''") .. "'"
 end
 
--- Reads a file's version in the git index. No signs when there is none
+-- The file's version in the git index, if any
 local function load_base(file)
   local path = file and file.path
   if not path then
@@ -229,7 +222,7 @@ local function load_base(file)
   state[path] = { base = base }
 end
 
--- A file's signs, diffed again when its content changed
+-- A file's signs, diffed again when it changed
 local function signs(file)
   local st = file and file.path and state[file.path]
   if not st or not st.base or file.size > M.max_size then
@@ -250,7 +243,6 @@ vis.events.subscribe(vis.events.FILE_CLOSE, function(file)
   end
 end)
 
--- The tints on the text
 vis.events.subscribe(vis.events.WIN_HIGHLIGHT, function(win)
   local st = signs(win.file)
   if not st then
@@ -280,7 +272,7 @@ vis.events.subscribe(vis.events.WIN_HIGHLIGHT, function(win)
   end)
 end)
 
--- How many cells wide a line is drawn, for where wrapped lines push the next
+-- A line's width in cells, to follow wrapped lines
 local function width(line, tabwidth)
   if not line:find("\t", 1, true) then
     return utf8.len(line) or #line
@@ -292,8 +284,7 @@ local function width(line, tabwidth)
   return col
 end
 
--- The number tint below removed lines. vis draws the numbers after
--- WIN_HIGHLIGHT, so this styles the finished cells
+-- The number below removed lines: vis draws numbers after WIN_HIGHLIGHT, so this styles cells
 vis.events.subscribe(vis.events.UI_DRAW, function()
   for win in vis:windows() do
     local st = win.file and win.file.path and state[win.file.path]

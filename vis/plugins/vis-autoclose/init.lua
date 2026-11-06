@@ -1,5 +1,4 @@
 -- vis-autoclose: an opening bracket or quote types its closing one too
-require('vis')
 
 local close_of = { ['('] = ')', ['{'] = '}', ['['] = ']', ['<'] = '>', ["'"] = "'", ['"'] = '"', ['`'] = '`' }
 local closing = {}

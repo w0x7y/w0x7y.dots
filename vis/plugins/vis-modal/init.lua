@@ -1,5 +1,4 @@
 -- vis-modal: the status line, colored by mode
-require('vis')
 local style = require('plugins/style-compat') -- Local patch: styles on vis after 0.9
 
 local M = {}
@@ -15,7 +14,6 @@ local MODES = {
 	[vis.modes.VISUAL_LINE] = ' VISUAL_LINE ',
 	[vis.modes.OPERATOR_PENDING] = ' OPERATOR_PENDING ',
 }
-M.MODES = MODES
 
 local STYLES = {
 	[vis.modes.NORMAL] = {
@@ -49,11 +47,11 @@ local STYLES = {
 }
 M.STYLES = STYLES
 
--- Local patch: other modules add segments after the file name (M.left) and
--- before line:col (M.right). Each is a function of the window that returns a
--- list of { text, style } parts, style being a vis style string or nil.
--- Left parts are cut to the room the right side leaves
+-- Local patch: segments after the file name (M.left) and before line:col (M.right),
+-- each a function(win) returning { text, style } parts. Left ones get cut to fit
 M.left, M.right = {}, {}
+-- Local patch: M.name(win) may rename the file, as vis-oil does
+M.name = nil
 local EXTRA_STYLE = style.id(53)
 
 local function width(s)
@@ -76,10 +74,10 @@ local function parts_of(list, win)
 end
 
 vis.events.subscribe(vis.events.WIN_STATUS, function(win)
-	local filename = ' '..(win.file.name or '[NO NAME]')..(win.file.modified and ' *' or '')..' '
+	local filename = ' '..((M.name and M.name(win)) or win.file.name or '[NO NAME]')..(win.file.modified and ' *' or '')..' '
 	local vmode = MODES[vis.mode]
 
-	-- Local patch: the mode, the file, line:col and the segments of M.left and M.right
+	-- Local patch: mode, file, M.left, M.right, line:col
 	local styled = {} -- { first cell, text, style }
 	local right = ''
 	for _, part in ipairs(parts_of(M.right, win)) do
@@ -106,7 +104,7 @@ vis.events.subscribe(vis.events.WIN_STATUS, function(win)
 	end
 	win:status(left, right)
 
-	-- Local patch: later vis shares a style between windows, so define this window's
+	-- Local patch: later vis shares styles between windows, so define this one's
 	local colors = win == vis.win and STYLES[vis.mode] or STYLES.UNFOCUSED
 	style.define(win, MODAL_STYLE, colors.REGULAR)
 	style.define(win, MODAL_STYLE_INVERTED, colors.INVERTED)
@@ -120,7 +118,7 @@ vis.events.subscribe(vis.events.WIN_STATUS, function(win)
 
 	for _, s in ipairs(styled) do
 		if s[3] then
-			style.define(win, EXTRA_STYLE, s[3]) -- style_pos copies the style, so one id serves every part
+			style.define(win, EXTRA_STYLE, s[3]) -- style_pos copies it, so one id serves all
 			for i = s[1], s[1] + width(s[2]) - 1 do
 				win:style_pos(EXTRA_STYLE, i, win.height - 1)
 			end

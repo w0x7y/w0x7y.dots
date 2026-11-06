@@ -1,4 +1,4 @@
--- vis-lspc: the language servers and the LSP keys
+-- Language servers and LSP keys (vis-lspc)
 local lspc = require("plugins/vis-lspc")
 
 -- Servers by vis syntax name, run from $PATH
@@ -96,10 +96,10 @@ end
 lspc.universal_root_globs = { ".git" }
 lspc.autoconfirm_edits = true -- grn renames without asking
 lspc.highlight_diagnostics = "range" -- color the problem, not the line number
--- one line at the bottom (-b), not over the code
+-- -b: menus on the bottom line, not over the code
 lspc.menu_cmd = "vis-menu -b"
 lspc.confirm_cmd = "vis-menu -b"
-lspc.navwin_layout = "vl" -- the default "vr" writes :lspc-navigate-symbols over the buffer
+lspc.navwin_layout = "vl" -- the default "vr" draws symbols over the buffer
 
 -- Keep lspc's gd, <C-t> and insert <C-Space>; the status line replaces K
 local normal = vis.modes.NORMAL
@@ -108,7 +108,7 @@ for _, key in ipairs({ "K", "<F2>", "<F3>", "<C-]>", "gD", "gi", "gr", " D", " e
   vis:unmap(normal, key)
 end
 
--- Rename, with the name under the cursor already typed
+-- Rename, the name under the cursor already typed
 vis:map(normal, "grn", function()
   local file = vis.win.file
   local range = file:text_object_word(vis.win.selection.pos)

@@ -4,8 +4,7 @@ local function sh(s)
   return "'" .. s:gsub("'", "'\\''") .. "'"
 end
 
--- Each takes the file's path (for the formatter's config) and returns the
--- command that formats stdin to stdout
+-- Each returns a command that formats stdin to stdout; the path finds the formatter's config
 local function stylua(path)
   return "stylua --indent-type Spaces --indent-width 2 --search-parent-directories --stdin-filepath "
     .. sh(path)
@@ -35,7 +34,7 @@ local function prettier(path)
   return "prettier --tab-width 2 --stdin-filepath " .. sh(path)
 end
 
--- goimports also adds and removes imports; gofmt where it isn't installed
+-- goimports also fixes imports; gofmt without it
 local function goimports(path)
   return "command -v goimports >/dev/null && exec goimports -srcdir " .. sh(path) .. " || exec gofmt"
 end
@@ -88,12 +87,12 @@ local function formatter_for(path, syntax)
   if ext then
     return by_ext[ext:lower()]
   end
-  if syntax == "revo" then -- a revo script found by its shebang
+  if syntax == "revo" then -- a script with a revo shebang
     return revofmt
   end
 end
 
--- Replace only the part that changed, so the cursor, marks and undo step stay put
+-- Replaces only what changed, so the cursor, marks and undo stay put
 local function apply(file, win, new)
   local old = file:content(0, file.size)
   if new == old then
@@ -124,13 +123,13 @@ local function format(formatter, file, path, win)
   apply(file, win, out)
 end
 
--- An error here would cancel the save, so it's caught
+-- Caught: an error here would cancel the save
 vis.events.subscribe(vis.events.FILE_SAVE_PRE, function(file, path)
   path = path or file.path
   if not path or file.size == 0 then
     return
   end
-  local win -- the window showing the file, preferably the current one
+  local win -- showing the file, preferably the current one
   for w in vis:windows() do
     if w.file == file then
       win = w

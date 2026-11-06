@@ -1,9 +1,9 @@
 require("vis")
 
--- Options ------------------------------------------------------------------
+-- Options
 
 vis.events.subscribe(vis.events.INIT, function()
-  -- rime-frost when ~/.config/sway/scripts/theme.sh last picked it
+  -- the sway theme script writes the variant
   local f = io.open(os.getenv("HOME") .. "/.local/state/rime/variant")
   local theme = f and f:read("l") == "rime-frost" and "rime-frost" or "rime"
   if f then
@@ -11,7 +11,7 @@ vis.events.subscribe(vis.events.INIT, function()
   end
   vis:command("set theme " .. theme)
   vis:command("set ignorecase on")
-  vis:command("set shell /bin/sh") -- not fish: shell commands here are POSIX sh
+  vis:command("set shell /bin/sh") -- the commands here are POSIX sh, not fish
 end)
 
 vis.events.subscribe(vis.events.WIN_OPEN, function(win)
@@ -24,21 +24,23 @@ end)
 
 vis.ftdetect.filetypes.revo = { ext = { "%.rv$", "%.revo$" }, utility = { "^revo$" } }
 
--- Plugins ------------------------------------------------------------------
+-- Plugins
 
 require("plugins/vis-modal") -- status line
 require("plugins/vis-autoclose")
 require("plugins/vis-colorizer")
 require("plugins/vis-gitsigns")
+require("plugins/vis-cursor")
+require("plugins/vis-modal").name = require("plugins/vis-oil").folder -- oil's folder, not its temp file
 require("config/lsp") -- before the keys: it unmaps lspc's <Space>e
 require("config/diagnostics")
 require("config/format")
 
--- Keys (leader is <Space>, LSP keys are in config/lsp.lua) -----------------
+-- Keys: leader is <Space>, LSP keys are in config/lsp.lua
 
 local normal, visual = vis.modes.NORMAL, vis.modes.VISUAL
 
--- System clipboard. Not "+y: with wl-copy it hangs vis 0.9
+-- System clipboard. Not "+y, which hangs vis 0.9 with wl-copy
 vis:map(visual, " y", ":>vis-clipboard --copy >/dev/null 2>&1<Enter><Escape>", "Copy to the clipboard")
 vis:map(normal, " p", '"+p', "Paste the clipboard")
 
@@ -51,7 +53,7 @@ end
 
 local fd = "fd --type f -E node_modules -E bin -E obj </dev/null"
 
--- Open the first path cmd prints, in a new window if this one is modified
+-- Opens the first path cmd prints, in a new window if this one is modified
 local function open_from(cmd)
   local status, out = vis:pipe(cmd, false)
   vis:redraw()

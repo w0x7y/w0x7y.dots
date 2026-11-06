@@ -1,9 +1,8 @@
--- Rime: Soft and muted pastels for long sessions.
--- A vis port of https://github.com/w0x7y/rime (default and frost variants), v0.5.1 palettes.
+-- Rime, soft muted pastels: a port of https://github.com/w0x7y/rime v0.5.1
 
 local lexers = vis.lexers
 
--- themes/rime-frost.lua loads this file under its own name to get the light one
+-- themes/rime-frost.lua loads this file under its name for the light palette
 local palettes = {
 	rime = {
 		bg        = '#23272e', -- base00
@@ -44,7 +43,7 @@ local palettes = {
 }
 local c = palettes[tostring(... or ''):match('rime%-frost$') and 'rime-frost' or 'rime']
 
--- derived shades, blended the way rime does it: a towards b by t, rounding half up
+-- Blends a towards b by t, rounding half up, as rime does
 local function mix(a, b, t)
 	local out = '#'
 	for i = 2, 6, 2 do
@@ -69,10 +68,8 @@ local function fg(name, attrs)
 	return 'fore:' .. c[name] .. (attrs and ',' .. attrs or '')
 end
 
--- The colors that let a tint keep the syntax colors under it: 'default' (unset)
--- on later vis. vis 0.9 keeps a cell's color only for its default color, which
--- is white and black when vis changes the 256 color palette (changecolors on,
--- terminfo ccc, 256 colors)
+-- Colors that let a tint keep the syntax color under it: 'default' on later vis.
+-- vis 0.9 keeps only its default colors, white and black when it redefines the palette
 local keep_fg, keep_bg = 'default', 'default'
 local vis09 = not vis.ui.style_push -- later vis keeps styles in vis.ui
 if vis09 and vis.options.changecolors and os.execute('tput ccc >/dev/null 2>&1') then
@@ -84,8 +81,7 @@ if vis09 and vis.options.changecolors and os.execute('tput ccc >/dev/null 2>&1')
 	end
 end
 
--- A sub-tag nobody styled (heading.h1, whitespace.lua) takes its parent's style,
--- as in Scintillua. vis 0.9 would draw it plain
+-- An unstyled sub-tag (heading.h1) takes its parent's style, as in Scintillua
 if not getmetatable(lexers) then
 	setmetatable(lexers, {__index = function(t, k)
 		local parent = type(k) == 'string' and k:match('^(STYLE_.+)_[^_]+$')
@@ -99,8 +95,9 @@ lexers.STYLE_NOTHING = 'back:' .. c.bg
 lexers.STYLE_CURSOR = 'fore:' .. c.bg .. ',back:' .. c.muted -- secondary cursors
 lexers.STYLE_CURSOR_PRIMARY = 'fore:' .. c.bg .. ',back:' .. c.fg
 lexers.STYLE_CURSOR_LINE = 'back:' .. c.bg_alt
-lexers.STYLE_COLOR_COLUMN = 'back:' .. c.colorcolumn
-lexers.STYLE_SELECTION = 'back:' .. c.bg_sel
+-- keep_attribute: comments stay italic under these tints (later vis; 0.9 ignores it)
+lexers.STYLE_COLOR_COLUMN = 'back:' .. c.colorcolumn .. ',keep_attribute'
+lexers.STYLE_SELECTION = 'back:' .. c.bg_sel .. ',keep_attribute'
 lexers.STYLE_LINENUMBER = fg('comment')
 lexers.STYLE_LINENUMBER_CURSOR = fg('fg_bright', 'bold')
 lexers.STYLE_STATUS = 'fore:' .. c.comment .. ',back:' .. c.bg_alt
@@ -114,7 +111,7 @@ lexers.STYLE_WHITESPACE = fg('whitespace')
 lexers.STYLE_COMMENT = fg('comment', 'italics')
 lexers.STYLE_STRING = fg('green')
 lexers.STYLE_NUMBER = fg('pink')
-lexers.STYLE_KEYWORD = fg('violet') -- keyword (vis has one keyword tag, so if/for/return share it)
+lexers.STYLE_KEYWORD = fg('violet') -- vis has one keyword tag, so if/for/return too
 lexers.STYLE_IDENTIFIER = fg('fg') -- variable
 lexers.STYLE_OPERATOR = fg('muted')
 lexers.STYLE_ERROR = fg('red')
@@ -125,7 +122,6 @@ lexers.STYLE_VARIABLE = fg('fg')
 lexers.STYLE_VARIABLE_BUILTIN = fg('cyan')
 lexers.STYLE_FUNCTION = fg('blue')
 lexers.STYLE_FUNCTION_BUILTIN = fg('cyan')
-lexers.STYLE_FUNCTION_METHOD = fg('blue') -- function
 lexers.STYLE_CLASS = fg('yellow') -- type
 lexers.STYLE_TYPE = fg('yellow')
 lexers.STYLE_LABEL = fg('yellow')
@@ -167,13 +163,10 @@ lexers.STYLE_LINE = fg('pink')
 lexers.STYLE_COLUMN = fg('pink')
 lexers.STYLE_MESSAGE = fg('fg')
 lexers.STYLE_TAG_DAY = fg('yellow') -- Taskpaper
-lexers.STYLE_TAG_OVERDUE = fg('red')
 
--- The plugins' colors (themes load on INIT, after visrc.lua loaded the plugins).
--- Delete this part to keep their own
+-- The plugins' colors. Themes load after the plugins; delete this part to keep theirs
 
--- vis-modal: the status line colored by mode, like rime's lualine theme.
--- Its STYLES is edited in place: modal keeps its own reference to it
+-- vis-modal, like rime's lualine theme. STYLES is edited in place: modal holds a reference
 local modal = package.loaded['plugins/vis-modal']
 if modal then
 	local function mode(accent)
@@ -193,7 +186,7 @@ if modal then
 	modal.STYLES.UNFOCUSED.REGULAR, modal.STYLES.UNFOCUSED.INVERTED = inactive, inactive
 end
 
--- vis-lspc: the problem underlined in its severity's color, over any git tint
+-- vis-lspc: problems underlined in their color, over any git tint
 local lspc = package.loaded['plugins/vis-lspc']
 if lspc then
 	for severity, color in pairs({error = 'red', warning = 'yellow', information = 'blue', hint = 'cyan'}) do
@@ -201,8 +194,7 @@ if lspc then
 	end
 end
 
--- config/diagnostics.lua: the cursor line's problem on the status line, like
--- rime's diagnostic virtual text, and the totals on the file name's background
+-- config/diagnostics.lua, like rime's diagnostic virtual text
 local diagnostics = package.loaded['config/diagnostics']
 if diagnostics then
 	local severities = {{'red', c.diag_error}, {'yellow', c.diag_warn}, {'blue', c.diag_info}, {'cyan', c.diag_hint}}
@@ -213,12 +205,17 @@ if diagnostics then
 	diagnostics.styles.gap = 'back:' .. c.bg_sel
 end
 
--- vis-gitsigns: tints on what changed that keep the code's colors, and bright
--- digits on the number below removed lines
+-- vis-gitsigns: tints that keep the code's colors
 local gitsigns = package.loaded['plugins/vis-gitsigns']
 if gitsigns then
 	gitsigns.styles.add = 'fore:' .. keep_fg .. ',back:' .. c.git_add
 	gitsigns.styles.change = 'fore:' .. keep_fg .. ',back:' .. c.git_change
 	gitsigns.styles.cut = 'fore:' .. keep_fg .. ',back:' .. c.git_removed
 	gitsigns.styles.removed = fg('fg_bright', 'back:' .. c.git_removed)
+end
+
+-- vis-oil: folders in blue
+local oil = package.loaded['plugins/vis-oil']
+if oil then
+	oil.styles.dir = fg('blue')
 end

@@ -18,7 +18,7 @@ copy only the folders you want. each one's readme lists what it needs
 ### what's in it
 
 ~ [nvim](nvim/), neovim with one file per feature, lsp, completion and revo support\
-~ [vis](vis/), vis with lsp, format on save, git signs and revo\
+~ [vis](vis/), vis with lsp, format on save, git signs, oil-style folder editing, cursor shapes by mode and revo\
 ~ [ghostty](ghostty/), maple mono and a see-through background\
 ~ [tmux](tmux/), a plain bar on top and alt keys that skip the prefix\
 ~ [fish](fish/), auto-closing brackets, man pages through bat and only the aliases i use
