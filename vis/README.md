@@ -47,7 +47,7 @@ no `K`: the status line shows the cursor line's problem, and hover is `:lspc-hov
 ~ rime or rime-frost, whichever `~/.local/state/rime/variant` says at startup\
 ~ relative line numbers, the cursor line shows its own\
 ~ the terminal's cursor changes shape with the mode, like neovim: a block in normal mode, a bar in insert mode, an underline in visual, replace and operator-pending mode\
-~ oil: `<leader>e` opens the file's folder as a buffer, again for the folder above it. rename a line to rename the file, `dd` to delete it, add a line to create one (end it in `/` for a folder), and `:w` lists the changes on the bottom line and asks before doing them. `<Enter>` opens an entry\
+~ oil: `<leader>e` opens the file's folder as a buffer, again for the folder above it. dot folders come first, then folders, dot files and files. rename a line to rename the file, `dd` to delete it, add a line to create one (end it in `/` for a folder), and `:w` lists the changes on the bottom line and asks before doing them. `<Enter>` opens an entry\
 ~ format on save with stylua, clang-format, ruff, rustfmt, csharpier, prettier, zig fmt and revofmt, all at 2 spaces, and goimports (or gofmt) for Go, which indents with tabs\
 ~ diagnostics underline the problem in its color: red error, yellow warning, blue info, cyan hint\
 ~ git signs against the index, updated as you type: added lines and changed words get a tint, text removed from a line a red cell, and the line below removed lines a red number. the index is read on open and save, so a `git add` from a shell shows after the next save\
