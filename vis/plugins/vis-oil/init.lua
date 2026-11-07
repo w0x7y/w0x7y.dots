@@ -42,20 +42,24 @@ local function is_dir(path)
   return f and f:close() and true or false
 end
 
--- A folder's entries, folders first and ending in /
+-- A folder's entries: dot folders, folders, dot files, then files. Folders end in /
 local function list(dir)
   local ls = io.popen("ls -1Ap -- " .. sh(dir) .. " 2>/dev/null </dev/null")
-  local dirs, files = {}, {}
+  local groups = { {}, {}, {}, {} }
   for name in ls:lines() do
-    table.insert(name:sub(-1) == "/" and dirs or files, name)
+    local g = (name:sub(-1) == "/" and 1 or 3) + (name:sub(1, 1) == "." and 0 or 1)
+    table.insert(groups[g], name)
   end
   if not ls:close() then
     return nil
   end
-  for _, name in ipairs(files) do
-    dirs[#dirs + 1] = name
+  local names = {}
+  for _, group in ipairs(groups) do
+    for _, name in ipairs(group) do
+      names[#names + 1] = name
+    end
   end
-  return dirs
+  return names
 end
 
 local function shown(temp)
