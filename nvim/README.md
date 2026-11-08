@@ -99,8 +99,8 @@ snippets stay out of the menu. type `@` before a word, like `@for`, to list only
 ~ `.rv`, `.revo` and files with a revo shebang get the `revo` filetype\
 ~ `revo lsp` runs as the language server, with inlay hints on\
 ~ the parser builds from `~/.local/share/revo/tree-sitter-revo-current`\
-~ [revofmt.nvim](https://github.com/w0x7y/revofmt.nvim) formats on save\
-~ 43 snippets in `snippets/revo.json`, like `fn`, `match`, `test`, `class` and `cli`
+~ `revo lsp` also formats on save, through conform's lsp fallback\
+~ 41 snippets in `snippets/revo.json`, like `fn`, `match`, `test`, `class` and `cli`
 
 > [!TIP]
 > set `vim.g.revo_executable` or `vim.g.revo_grammar_path` before `require("config.revo")` in `init.lua` to use another binary or grammar
@@ -123,7 +123,6 @@ lua/plugins/formatting.lua  conform and <leader>jf
 lua/plugins/editor.lua      flash, autopairs, ts-autotag, gitsigns
 lua/plugins/ui.lua          lualine, render-markdown
 lua/plugins/snacks.lua      snacks: images, indent guides, words
-lua/plugins/revo.lua        revofmt.nvim
 lua/plugins/sql.lua         better-sql.nvim
 ftplugin/revo.lua           revo comments and highlighting
 snippets/                   revo snippets, loaded by blink.cmp

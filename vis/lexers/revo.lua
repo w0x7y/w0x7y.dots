@@ -1,4 +1,4 @@
--- Revo, by hand since vis can't use tree-sitter-revo. Keywords may be missing
+-- Revo, by hand since vis can't use tree-sitter-revo. Keywords match Revo's lexer
 
 local lexer = lexer
 local B, P, S = lpeg.B, lpeg.P, lpeg.S
@@ -21,9 +21,10 @@ lex:add_rule('label', lex:tag(lexer.KEYWORD, lexer.word_match{ 'do', 'loop', 'br
 	* lex:tag(lexer.OPERATOR, '/') * lex:tag(lexer.LABEL, lexer.word))
 
 lex:add_rule('keyword', lex:tag(lexer.KEYWORD, lexer.word_match{
-	'fn', 'do', 'end', 'if', 'else', 'match', 'when', 'return', 'const', 'let', 'for', 'in',
-	'while', 'loop', 'break', 'type', 'import', 'spawn', 'proc', 'test', 'suite',
-	'and', 'or', 'not',
+	'const', 'global', 'let', 'comp', 'test', 'suite', 'type', 'fn', 'if', 'unless', 'else',
+	'match', 'when', 'do', 'end', 'loop', 'for', 'while', 'in', 'break', 'continue', 'return',
+	'spawn', 'yield', 'and', 'or', 'not', 'band', 'bor', 'bxor', 'shl', 'shr', 'orelse', 'pub',
+	'declare', 'import', 'use',
 }))
 
 lex:add_rule('constant', lex:tag(lexer.CONSTANT_BUILTIN, lexer.word_match{ 'true', 'false', 'nil' }))

@@ -43,8 +43,8 @@ local function zig_fmt()
   return "zig fmt --stdin"
 end
 
-local function revofmt(path)
-  return "revofmt --indent-width 2 --line-width 80 --stdin-filepath " .. sh(path)
+local function revo_fmt()
+  return "revo fmt -"
 end
 
 local by_ext = {
@@ -63,8 +63,8 @@ local by_ext = {
   go = goimports,
   zig = zig_fmt,
   zon = zig_fmt,
-  rv = revofmt,
-  revo = revofmt,
+  rv = revo_fmt,
+  revo = revo_fmt,
   html = prettier,
   css = prettier,
   scss = prettier,
@@ -88,7 +88,7 @@ local function formatter_for(path, syntax)
     return by_ext[ext:lower()]
   end
   if syntax == "revo" then -- a script with a revo shebang
-    return revofmt
+    return revo_fmt
   end
 end
 

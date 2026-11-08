@@ -71,10 +71,6 @@
     "branch": "main",
     "commit": "8e8795368391036643b622875a6da6a51bcd33f4"
   },
-  "revofmt.nvim": {
-    "branch": "main",
-    "commit": "4c57ddfe24db8394969e1245a9dbe0c67145c590"
-  },
   "snacks.nvim": {
     "branch": "main",
     "commit": "882c996cf28183f4d63640de0b4c02ec886d01f2"

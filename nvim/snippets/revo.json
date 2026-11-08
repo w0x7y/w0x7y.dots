@@ -2,17 +2,30 @@
   "Script header": {
     "prefix": "hdr",
     "description": "Shebang line plus a #! ... !# header comment",
-    "body": ["#!/usr/bin/env revo", " ${1:what this script does}", "!#", "$0"]
+    "body": [
+      "#!/usr/bin/env revo",
+      " ${1:what this script does}",
+      "!#",
+      "$0"
+    ]
   },
   "Function": {
     "prefix": "fn",
     "description": "Multi-line function: fn name(...) do ... end",
-    "body": ["fn ${1:name}(${2}) do", "\t$0", "end"]
+    "body": [
+      "fn ${1:name}(${2}) do",
+      "\t$0",
+      "end"
+    ]
   },
   "Anonymous function block": {
     "prefix": "fna",
     "description": "Anonymous fn with a do ... end body, for callbacks",
-    "body": ["fn(${1:x}) do", "\t$0", "end"]
+    "body": [
+      "fn(${1:x}) do",
+      "\t$0",
+      "end"
+    ]
   },
   "Match a result": {
     "prefix": "mres",
@@ -35,12 +48,16 @@
   "Ok result": {
     "prefix": "rok",
     "description": "{:ok, value}",
-    "body": ["{:ok, ${1:value}}"]
+    "body": [
+      "{:ok, ${1:value}}"
+    ]
   },
   "Error result": {
     "prefix": "rerr",
     "description": "{:err, :ErrorName}",
-    "body": ["{:err, :${1:Error}}"]
+    "body": [
+      "{:err, :${1:Error}}"
+    ]
   },
   "Function returning a result": {
     "prefix": "fnr",
@@ -55,32 +72,56 @@
   "For over a range": {
     "prefix": "fori",
     "description": "for i in start..end do ... end (end is exclusive)",
-    "body": ["for ${1:i} in ${2:0}..${3:n} do", "\t$0", "end"]
+    "body": [
+      "for ${1:i} in ${2:0}..${3:n} do",
+      "\t$0",
+      "end"
+    ]
   },
   "For over a collection": {
     "prefix": "forin",
     "description": "for x in a table, string or iterator",
-    "body": ["for ${1:x} in ${2:items} do", "\t$0", "end"]
+    "body": [
+      "for ${1:x} in ${2:items} do",
+      "\t$0",
+      "end"
+    ]
   },
   "If/else block": {
     "prefix": "ife",
     "description": "if cond do ... end else do ... end",
-    "body": ["if ${1:cond} do", "\t$2", "end else do", "\t$0", "end"]
+    "body": [
+      "if ${1:cond} do",
+      "\t$2",
+      "end else do",
+      "\t$0",
+      "end"
+    ]
   },
   "Doc comment": {
     "prefix": "doc",
     "description": "One-line doc comment, shown in LSP hover and revo doc",
-    "body": ["#* $0 *#"]
+    "body": [
+      "#* $0 *#"
+    ]
   },
   "Multi-line doc comment": {
     "prefix": "docm",
     "description": "Multi-line doc comment",
-    "body": ["#*", "$0", "*#"]
+    "body": [
+      "#*",
+      "$0",
+      "*#"
+    ]
   },
   "Test": {
     "prefix": "test",
     "description": "test block, runs with revo --test",
-    "body": ["test \"${1:name}\" do", "\texpect(${2:cond})?", "end"]
+    "body": [
+      "test \"${1:name}\" do",
+      "\texpect(${2:cond})?",
+      "end"
+    ]
   },
   "Test suite": {
     "prefix": "suite",
@@ -96,7 +137,9 @@
   "Expect equal": {
     "prefix": "eq",
     "description": "expect_eq(actual, expected)? inside a test",
-    "body": ["expect_eq(${1:actual}, ${2:expected})?"]
+    "body": [
+      "expect_eq(${1:actual}, ${2:expected})?"
+    ]
   },
   "Class": {
     "prefix": "class",
@@ -130,7 +173,9 @@
   "Method field": {
     "prefix": "mfn",
     "description": "Method field in a table literal: name = fn(self) ...,",
-    "body": ["${1:name} = fn(self${2}) $0,"]
+    "body": [
+      "${1:name} = fn(self${2}) $0,"
+    ]
   },
   "__iter metamethod": {
     "prefix": "iterm",
@@ -177,22 +222,25 @@
   "Destructure": {
     "prefix": "des",
     "description": "Destructure a table into bindings",
-    "body": ["const {${1:a}, ${2:b}} = $0"]
-  },
-  "Import block": {
-    "prefix": "imp",
-    "description": "import block with a plain path and an aliased path",
     "body": [
-      "import {",
-      "\t\"${1:module}\",",
-      "\t${2:alias} = \"${3:path}\",",
-      "}"
+      "const {${1:a}, ${2:b}} = $0"
+    ]
+  },
+  "Use and import": {
+    "prefix": "imp",
+    "description": "use a module named after its path, and import one under a name you pick",
+    "body": [
+      "use(\"${1:./module}\")",
+      "const ${2:alias} = import(\"${3:path}\")"
     ]
   },
   "Spawn and join": {
     "prefix": "spawnj",
     "description": "Run a call in a fiber and wait for its result",
-    "body": ["const ${1:h} = spawn ${2:worker}(${3})", "join(${1})"]
+    "body": [
+      "const ${1:h} = spawn ${2:worker}(${3})",
+      "join(${1})"
+    ]
   },
   "Spawn many and join all": {
     "prefix": "jobs",
@@ -237,7 +285,9 @@
   "Read file": {
     "prefix": "readf",
     "description": "Read a whole file into a string",
-    "body": ["const ${1:text} = fs.open(${2:\"file.txt\"})?:read()?"]
+    "body": [
+      "const ${1:text} = fs.open(${2:\"file.txt\"})?:read()?"
+    ]
   },
   "Write file": {
     "prefix": "writef",
@@ -272,22 +322,30 @@
   "Map and collect": {
     "prefix": "itmap",
     "description": "xs |> iter.map(...) |> iter.collect()",
-    "body": ["${1:xs} |> iter.map(fn(${2:x}) ${3:x}) |> iter.collect()"]
+    "body": [
+      "${1:xs} |> iter.map(fn(${2:x}) ${3:x}) |> iter.collect()"
+    ]
   },
   "Filter and collect": {
     "prefix": "itfilter",
     "description": "xs |> iter.filter(...) |> iter.collect()",
-    "body": ["${1:xs} |> iter.filter(fn(${2:x}) ${3:cond}) |> iter.collect()"]
+    "body": [
+      "${1:xs} |> iter.filter(fn(${2:x}) ${3:cond}) |> iter.collect()"
+    ]
   },
   "Reduce": {
     "prefix": "itreduce",
     "description": "iter.reduce(xs, fn(acc, x) ..., initial)",
-    "body": ["iter.reduce(${1:xs}, fn(acc, ${2:x}) ${3:acc + x}, ${4:0})"]
+    "body": [
+      "iter.reduce(${1:xs}, fn(acc, ${2:x}) ${3:acc + x}, ${4:0})"
+    ]
   },
   "Debug print": {
     "prefix": "dbg",
     "description": "Print a labeled value in debug format",
-    "body": ["print(\"${1:x} = #{${1}:?}\")"]
+    "body": [
+      "print(\"${1:x} = #{${1}:?}\")"
+    ]
   },
   "Time a block": {
     "prefix": "timeit",
@@ -298,30 +356,6 @@
       "print(\"took #{time.now() - start}ms\")"
     ]
   },
-  "Proc macro": {
-    "prefix": "proc",
-    "description": "Proc macro that reads an AST node and returns {node}",
-    "body": [
-      "proc ${1:name}!(iter) do",
-      "\tlet ${2:a} = iter:next()",
-      "\t$0",
-      "\t{${2}}",
-      "end"
-    ]
-  },
-  "Variadic proc macro": {
-    "prefix": "procv",
-    "description": "Proc macro that folds all arguments with a binary operator",
-    "body": [
-      "proc ${1:name}!(iter) do",
-      "\tlet acc = iter:next()",
-      "\twhile iter:peek() != :nil do",
-      "\t\tacc = {:binary, :${2:add}, acc, iter:next()}",
-      "\tend",
-      "\t{acc}",
-      "end"
-    ]
-  },
   "Native extension binding": {
     "prefix": "ext",
     "description": "Typed binding for a C/Zig extension loaded from a .so",
@@ -329,7 +363,7 @@
       "const ${1:ext}: {",
       "\t#* ${2:doc} *#",
       "\t${3:func}: fn(${4}) -> ${5:any},",
-      "} = import \"./${1}.so\"",
+      "} = revo.dload(\"./${1}.so\")",
       "${1}"
     ]
   },
