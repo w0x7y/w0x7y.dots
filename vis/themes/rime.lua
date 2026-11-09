@@ -208,6 +208,7 @@ if gitsigns then
 	gitsigns.colors.add = c.green
 	gitsigns.colors.change = c.blue
 	gitsigns.colors.removed = c.red
+	gitsigns.base = c.bg -- bar and background tints fade into it
 end
 
 -- vis-oil: folders in blue

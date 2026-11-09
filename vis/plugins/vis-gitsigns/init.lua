@@ -4,12 +4,16 @@ local style = require("plugins/style-compat")
 local M = {}
 
 M.display = "number" -- or :set gitsigns <display>
-M.displays = { -- %s is the color
-  number = "fore:%s,bold", -- the number
-  bar = "back:%s", -- the gap before the text
-  background = "fore:%s,bold,reverse", -- behind the number
+-- {color} is the kind's color, {tint} it faded into M.base by M.opacity, and
+-- {text} what stays readable on the tint: the color, or M.base under a strong tint
+M.displays = {
+  number = "fore:{color},bold", -- the number
+  bar = "back:{tint}", -- the gap before the text
+  background = "fore:{text},bold,back:{tint}", -- behind the number
 }
 M.colors = { add = "green", change = "blue", removed = "red" } -- removed marks the line below
+M.opacity = 0.35 -- how much of the color a tint keeps, 0 to 1
+M.base = nil -- the background tints fade into, as #rrggbb: the theme sets it
 M.max_size = 1024 * 1024 -- bigger files get no signs
 M.max_edits = 400 -- a diff that needs more edits is shown as one change
 
@@ -200,6 +204,32 @@ local function width(line, tabwidth)
   return col
 end
 
+-- Blends #rrggbb a towards b by t, rounding half up
+local function mix(a, b, t)
+  local out = "#"
+  for i = 2, 6, 2 do
+    local x, y = tonumber(a:sub(i, i + 1), 16), tonumber(b:sub(i, i + 1), 16)
+    out = out .. string.format("%02x", math.floor(x + (y - x) * t + 0.5))
+  end
+  return out
+end
+
+local function hex(s)
+  return type(s) == "string" and s:match("^#%x%x%x%x%x%x$") ~= nil
+end
+
+-- A display's style for a color; a named color or no base can't fade
+local function style_for(display, color)
+  local tint, text = color, M.base or color
+  if hex(color) and hex(M.base) then
+    local opacity = math.max(0, math.min(1, M.opacity))
+    tint = mix(M.base, color, opacity)
+    text = opacity > 0.6 and M.base or color
+  end
+  local values = { color = color, tint = tint, text = text }
+  return (display:gsub("{(%a+)}", values))
+end
+
 vis:option_register("gitsigns", "string", function(display)
   if not M.displays[display] then
     vis:info("gitsigns: number, bar or background")
@@ -236,7 +266,7 @@ vis.events.subscribe(vis.events.UI_DRAW, function()
       end
       for kind, list in pairs(rows) do
         if #list > 0 then
-          style.define(win, STYLE, M.displays[display]:format(M.colors[kind]))
+          style.define(win, STYLE, style_for(M.displays[display], M.colors[kind]))
           for _, y in ipairs(list) do
             for x = first, last do
               win:style_pos(STYLE, x, y)
