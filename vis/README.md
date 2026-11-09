@@ -2,9 +2,9 @@
 
 my [vis](https://github.com/martanne/vis) config. [rime](https://github.com/w0x7y/rime) colors, lsp and [revo](https://github.com/if-not-nil/revo) support
 
-![vis with rime: git signs on unsaved edits, an undefined global underlined and its warning on the status line](screenshots/rime.png)
+![vis with rime: git signs in the line numbers of unsaved edits, an undefined global underlined and its warning on the status line](screenshots/rime.png)
 
-a removed line, a changed word and two new lines since the git index, and the cursor line's warning on the status line
+a removed line (red), a changed line (blue) and three new lines (green) since the git index, and the cursor line's warning on the status line
 
 ### install
 
@@ -50,7 +50,7 @@ no `K`: the status line shows the cursor line's problem, and hover is `:lspc-hov
 ~ oil: `<leader>e` opens the file's folder as a buffer, again for the folder above it. dot folders come first, then folders, dot files and files. rename a line to rename the file, `dd` to delete it, add a line to create one (end it in `/` for a folder), and `:w` lists the changes on the bottom line and asks before doing them. `<Enter>` opens an entry\
 ~ format on save with stylua, clang-format, ruff, rustfmt, csharpier, prettier, zig fmt and revo fmt, all at 2 spaces, and goimports (or gofmt) for Go, which indents with tabs\
 ~ diagnostics underline the problem in its color: red error, yellow warning, blue info, cyan hint\
-~ git signs against the index, updated as you type: added lines and changed words get a tint, text removed from a line a red cell, and the line below removed lines a red number. the index is read on open and save, so a `git add` from a shell shows after the next save\
+~ git signs against the index, updated as you type: added lines get a green line number, changed lines a blue one, and the line below removed lines a red one. the index is read on open and save, so a `git add` from a shell shows after the next save\
 ~ vis-lspc, vis-modal, vis-autoclose and vis-colorizer, copied into `plugins/`, their fixes marked `Local patch`. vis-gitsigns, vis-cursor and vis-oil are our own, and so is `plugins/style-compat.lua`, which picks the style calls for vis 0.9 or a later build\
 ~ vis-cursor and vis-oil depend on nothing else here: copy the folder into any vis config and `require` it
 

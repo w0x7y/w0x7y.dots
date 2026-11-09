@@ -1,14 +1,13 @@
--- vis-gitsigns: tints what changed since the git index: added lines, changed
--- words, cut text, and the number of the line below removed lines
+-- vis-gitsigns: colors the line numbers of what changed since the git index:
+-- added lines, changed lines, and the line below removed lines
 local style = require("plugins/style-compat")
 
 local M = {}
 
 M.styles = {
-  add = "back:green", -- the text of an added line
-  change = "back:blue", -- the changed text in a changed line
-  cut = "back:red", -- where text was removed from a changed line
-  removed = "back:red", -- the number of the line below removed lines
+  add = "fore:green,bold", -- the number of an added line
+  change = "fore:blue,bold", -- the number of a changed line
+  removed = "fore:red,bold", -- the number of the line below removed lines
 }
 M.max_size = 1024 * 1024 -- bigger files get no signs
 M.max_edits = 400 -- a diff that needs more edits is shown as one change
@@ -17,19 +16,18 @@ M.max_edits = 400 -- a diff that needs more edits is shown as one change
 local STYLE = style.id(62)
 
 -- By path: base (the index's lines) and the last diff's content, lines,
--- offsets, marks (by line: add, or change and cut columns) and removed
+-- marks (by line: "add" or "change") and removed
 local state = {}
 
--- The lines of a text and the byte offset each one starts at
+-- The lines of a text
 local function split(text)
-  local lines, offsets = {}, {}
+  local lines = {}
   local pos = 1
   while true do
-    offsets[#offsets + 1] = pos - 1
     local newline = text:find("\n", pos, true)
     if not newline then
       lines[#lines + 1] = text:sub(pos)
-      return lines, offsets
+      return lines
     end
     lines[#lines + 1] = text:sub(pos, newline - 1)
     pos = newline + 1
@@ -102,57 +100,9 @@ local function hunks(n, m, deleted, inserted, hunk)
   end
 end
 
--- Tokens for the word diff: words, runs of spaces, single characters
-local function tokens(line)
-  local list, starts = {}, {}
-  local pos = 1
-  while pos <= #line do
-    local s, e = line:find("^[%w_]+", pos)
-    if not s then
-      s, e = line:find("^%s+", pos)
-    end
-    if not s then
-      s, e = line:find("^[\192-\255][\128-\191]*", pos) -- one UTF-8 character
-    end
-    if not s then
-      s, e = pos, pos
-    end
-    list[#list + 1] = line:sub(s, e)
-    starts[#starts + 1] = s
-    pos = e + 1
-  end
-  return list, starts
-end
-
--- A line's changes: column ranges of new text, and columns where text was only removed
-local function word_diff(old, new)
-  local a = tokens(old)
-  local b, starts = tokens(new)
-  local deleted, inserted = myers(a, b, M.max_edits)
-  if not deleted then
-    return { { 1, #new } }, {}
-  end
-  local changes, cuts = {}, {}
-  hunks(#a, #b, deleted, inserted, function(first, last, first_old, last_old)
-    local col = starts[first] or #new + 1
-    local prev = changes[#changes]
-    if last >= first then
-      local stop = starts[last + 1] and starts[last + 1] - 1 or #new
-      if prev and new:sub(prev[2] + 1, col - 1):match("^%s*$") then
-        prev[2] = stop -- only spaces between: one span
-      else
-        changes[#changes + 1] = { col, stop }
-      end
-    elseif last_old >= first_old then
-      cuts[#cuts + 1] = { col, col }
-    end
-  end)
-  return changes, cuts
-end
-
 -- Diffs content against the base into st's marks
 local function compute(st, content)
-  local lines, offsets = split(content)
+  local lines = split(content)
   local base, n, m = st.base, #st.base, #lines
   local pre, suf = 0, 0 -- the common lines at the start and the end
   while pre < n and pre < m and base[pre + 1] == lines[pre + 1] do
@@ -184,20 +134,14 @@ local function compute(st, content)
   local shown = (m > 1 and lines[m] == "") and m - 1 or m
   local marks, removed = {}, {}
   hunks(#a, #b, deleted, inserted, function(first, last, first_old, last_old)
-    for j = first, last do
-      local i = first_old + j - first
-      if i <= last_old then
-        local changes, cuts = word_diff(a[i], b[j])
-        marks[pre + j] = { change = changes, cut = cuts }
-      else
-        marks[pre + j] = { add = true }
-      end
+    for j = first, last do -- new lines past the old ones are added
+      marks[pre + j] = first_old + j - first <= last_old and "change" or "add"
     end
     if last_old - first_old > last - first then -- more lines went than came
       removed[math.min(pre + last + 1, shown)] = true
     end
   end)
-  st.content, st.lines, st.offsets, st.marks, st.removed = content, lines, offsets, marks, removed
+  st.content, st.lines, st.marks, st.removed = content, lines, marks, removed
 end
 
 local function quote(s)
@@ -243,35 +187,6 @@ vis.events.subscribe(vis.events.FILE_CLOSE, function(file)
   end
 end)
 
-vis.events.subscribe(vis.events.WIN_HIGHLIGHT, function(win)
-  local st = signs(win.file)
-  if not st then
-    return
-  end
-  local lines = win.viewport.lines
-  local function paint(kind, spans)
-    style.define(win, STYLE, M.styles[kind])
-    for line = lines.start, lines.finish do
-      local mark = st.marks[line]
-      for _, span in ipairs(mark and spans(mark, st.lines[line]) or {}) do
-        win:style(STYLE, st.offsets[line] + span[1] - 1, st.offsets[line] + span[2] - 1)
-      end
-    end
-  end
-  paint("add", function(mark, text)
-    if mark.add then
-      local first = text:find("%S")
-      return { first and { first, #text } or { #text + 1, #text + 1 } } -- a blank line: its end
-    end
-  end)
-  paint("change", function(mark)
-    return mark.change
-  end)
-  paint("cut", function(mark)
-    return mark.cut
-  end)
-end)
-
 -- A line's width in cells, to follow wrapped lines
 local function width(line, tabwidth)
   if not line:find("\t", 1, true) then
@@ -284,26 +199,35 @@ local function width(line, tabwidth)
   return col
 end
 
--- The number below removed lines: vis draws numbers after WIN_HIGHLIGHT, so this styles cells
+-- Colors the numbers: vis draws them after WIN_HIGHLIGHT, so this styles cells
 vis.events.subscribe(vis.events.UI_DRAW, function()
   for win in vis:windows() do
-    local st = win.file and win.file.path and state[win.file.path]
+    local st = signs(win.file)
     local viewport = win.viewport
     local sidebar = win.width - viewport.width
-    if st and st.removed and next(st.removed) and sidebar > 0 then
-      style.define(win, STYLE, M.styles.removed)
+    if st and sidebar > 0 then
+      local rows = { add = {}, change = {}, removed = {} } -- by kind, the rows to color
       local tabwidth = win.options.tabwidth or 8
       local row = 0
       for line = viewport.lines.start, viewport.lines.finish do
         if row >= viewport.height then
           break
         end
-        if st.removed[line] then
-          for x = 0, sidebar - 1 do
-            win:style_pos(STYLE, x, row)
-          end
+        local kind = st.removed[line] and "removed" or st.marks[line]
+        if kind then
+          table.insert(rows[kind], row)
         end
         row = row + 1 + math.floor(width(st.lines[line] or "", tabwidth) / viewport.width)
+      end
+      for kind, list in pairs(rows) do
+        if #list > 0 then
+          style.define(win, STYLE, M.styles[kind])
+          for _, y in ipairs(list) do
+            for x = 0, sidebar - 1 do
+              win:style_pos(STYLE, x, y)
+            end
+          end
+        end
       end
     end
   end

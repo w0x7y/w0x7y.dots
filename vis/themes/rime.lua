@@ -60,24 +60,21 @@ c.diag_error  = mix(c.red, c.bg, 0.9)
 c.diag_warn   = mix(c.yellow, c.bg, 0.9)
 c.diag_info   = mix(c.blue, c.bg, 0.9)
 c.diag_hint   = mix(c.cyan, c.bg, 0.9)
-c.git_add     = mix(c.green, c.bg, 0.8)
-c.git_change  = mix(c.blue, c.bg, 0.68)
-c.git_removed = mix(c.red, c.bg, 0.55)
 
 local function fg(name, attrs)
 	return 'fore:' .. c[name] .. (attrs and ',' .. attrs or '')
 end
 
--- Colors that let a tint keep the syntax color under it: 'default' on later vis.
--- vis 0.9 keeps only its default colors, white and black when it redefines the palette
-local keep_fg, keep_bg = 'default', 'default'
+-- A background that keeps the one under it: 'default' on later vis.
+-- vis 0.9 keeps only its default colors, black when it redefines the palette
+local keep_bg = 'default'
 local vis09 = not vis.ui.style_push -- later vis keeps styles in vis.ui
 if vis09 and vis.options.changecolors and os.execute('tput ccc >/dev/null 2>&1') then
 	local tput = io.popen('tput colors 2>/dev/null')
 	local colors = tput and tonumber(tput:read('l') or '')
 	if tput then tput:close() end
 	if colors and colors >= 256 then
-		keep_fg, keep_bg = 'white', 'black'
+		keep_bg = 'black'
 	end
 end
 
@@ -186,7 +183,7 @@ if modal then
 	modal.STYLES.UNFOCUSED.REGULAR, modal.STYLES.UNFOCUSED.INVERTED = inactive, inactive
 end
 
--- vis-lspc: problems underlined in their color, over any git tint
+-- vis-lspc: problems underlined in their color, over any background
 local lspc = package.loaded['plugins/vis-lspc']
 if lspc then
 	for severity, color in pairs({error = 'red', warning = 'yellow', information = 'blue', hint = 'cyan'}) do
@@ -205,13 +202,12 @@ if diagnostics then
 	diagnostics.styles.gap = 'back:' .. c.bg_sel
 end
 
--- vis-gitsigns: tints that keep the code's colors
+-- vis-gitsigns: the line numbers of added, changed and removed lines
 local gitsigns = package.loaded['plugins/vis-gitsigns']
 if gitsigns then
-	gitsigns.styles.add = 'fore:' .. keep_fg .. ',back:' .. c.git_add
-	gitsigns.styles.change = 'fore:' .. keep_fg .. ',back:' .. c.git_change
-	gitsigns.styles.cut = 'fore:' .. keep_fg .. ',back:' .. c.git_removed
-	gitsigns.styles.removed = fg('fg_bright', 'back:' .. c.git_removed)
+	gitsigns.styles.add = fg('green', 'bold')
+	gitsigns.styles.change = fg('blue', 'bold')
+	gitsigns.styles.removed = fg('red', 'bold')
 end
 
 -- vis-oil: folders in blue
