@@ -2,7 +2,7 @@
 
 my [vis](https://github.com/martanne/vis) config. [rime](https://github.com/w0x7y/rime) colors, lsp and [revo](https://github.com/if-not-nil/revo) support
 
-![vis with rime: git signs in the line numbers of unsaved edits, an undefined global underlined and its warning on the status line](screenshots/rime.png)
+![vis with rime: git signs tinted behind the line numbers of unsaved edits, an undefined global underlined and its warning on the status line](screenshots/rime.png)
 
 a removed line (red), a changed line (blue) and three new lines (green) since the git index, and the cursor line's warning on the status line
 
