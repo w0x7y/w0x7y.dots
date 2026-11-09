@@ -29,7 +29,7 @@ vis.ftdetect.filetypes.revo = { ext = { "%.rv$", "%.revo$" }, utility = { "^revo
 require("plugins/vis-modal") -- status line
 require("plugins/vis-autoclose")
 require("plugins/vis-colorizer")
-require("plugins/vis-gitsigns")
+require("plugins/vis-gitsigns").display = "number" -- or "bar", "background"
 require("plugins/vis-cursor")
 local oil = require("plugins/vis-oil")
 require("plugins/vis-modal").name = oil.folder -- oil's folder, not its temp file

@@ -202,12 +202,12 @@ if diagnostics then
 	diagnostics.styles.gap = 'back:' .. c.bg_sel
 end
 
--- vis-gitsigns: the line numbers of added, changed and removed lines
+-- vis-gitsigns: added, changed and removed lines
 local gitsigns = package.loaded['plugins/vis-gitsigns']
 if gitsigns then
-	gitsigns.styles.add = fg('green', 'bold')
-	gitsigns.styles.change = fg('blue', 'bold')
-	gitsigns.styles.removed = fg('red', 'bold')
+	gitsigns.colors.add = c.green
+	gitsigns.colors.change = c.blue
+	gitsigns.colors.removed = c.red
 end
 
 -- vis-oil: folders in blue

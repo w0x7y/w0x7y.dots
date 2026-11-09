@@ -1,14 +1,15 @@
--- vis-gitsigns: colors the line numbers of what changed since the git index:
--- added lines, changed lines, and the line below removed lines
+-- vis-gitsigns: marks lines changed since the git index in the line numbers
 local style = require("plugins/style-compat")
 
 local M = {}
 
-M.styles = {
-  add = "fore:green,bold", -- the number of an added line
-  change = "fore:blue,bold", -- the number of a changed line
-  removed = "fore:red,bold", -- the number of the line below removed lines
+M.display = "number" -- or :set gitsigns <display>
+M.displays = { -- %s is the color
+  number = "fore:%s,bold", -- the number
+  bar = "back:%s", -- the gap before the text
+  background = "fore:%s,bold,reverse", -- behind the number
 }
+M.colors = { add = "green", change = "blue", removed = "red" } -- removed marks the line below
 M.max_size = 1024 * 1024 -- bigger files get no signs
 M.max_edits = 400 -- a diff that needs more edits is shown as one change
 
@@ -199,13 +200,27 @@ local function width(line, tabwidth)
   return col
 end
 
--- Colors the numbers: vis draws them after WIN_HIGHLIGHT, so this styles cells
+vis:option_register("gitsigns", "string", function(display)
+  if not M.displays[display] then
+    vis:info("gitsigns: number, bar or background")
+    return false
+  end
+  M.display = display
+  return true
+end, "Git signs display: number, bar or background")
+
+-- Styles sidebar cells: vis draws the sidebar after WIN_HIGHLIGHT
 vis.events.subscribe(vis.events.UI_DRAW, function()
+  local display = M.displays[M.display] and M.display or "number"
   for win in vis:windows() do
     local st = signs(win.file)
     local viewport = win.viewport
     local sidebar = win.width - viewport.width
-    if st and sidebar > 0 then
+    if st and sidebar > 1 then
+      local first, last = 0, sidebar - 2 -- the number; the gap is the last cell
+      if display == "bar" then
+        first, last = sidebar - 1, sidebar - 1
+      end
       local rows = { add = {}, change = {}, removed = {} } -- by kind, the rows to color
       local tabwidth = win.options.tabwidth or 8
       local row = 0
@@ -221,9 +236,9 @@ vis.events.subscribe(vis.events.UI_DRAW, function()
       end
       for kind, list in pairs(rows) do
         if #list > 0 then
-          style.define(win, STYLE, M.styles[kind])
+          style.define(win, STYLE, M.displays[display]:format(M.colors[kind]))
           for _, y in ipairs(list) do
-            for x = 0, sidebar - 1 do
+            for x = first, last do
               win:style_pos(STYLE, x, y)
             end
           end

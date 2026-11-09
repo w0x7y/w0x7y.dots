@@ -50,7 +50,7 @@ no `K`: the status line shows the cursor line's problem, and hover is `:lspc-hov
 ~ oil: `<leader>e` opens the file's folder as a buffer, again for the folder above it. dot folders come first, then folders, dot files and files. rename a line to rename the file, `dd` to delete it, add a line to create one (end it in `/` for a folder), and `:w` lists the changes on the bottom line and asks before doing them. `<Enter>` opens an entry\
 ~ format on save with stylua, clang-format, ruff, rustfmt, csharpier, prettier, zig fmt and revo fmt, all at 2 spaces, and goimports (or gofmt) for Go, which indents with tabs\
 ~ diagnostics underline the problem in its color: red error, yellow warning, blue info, cyan hint\
-~ git signs against the index, updated as you type: added lines get a green line number, changed lines a blue one, and the line below removed lines a red one. the index is read on open and save, so a `git add` from a shell shows after the next save\
+~ git signs against the index, updated as you type: added lines are green, changed lines blue, and the line below removed lines red. shown on the `number`, as a `bar` in the gap before the text, or as the `background` behind the number, picked in `visrc.lua` or with `:set gitsigns`. the index is read on open and save, so a `git add` from a shell shows after the next save\
 ~ vis-lspc, vis-modal, vis-autoclose and vis-colorizer, copied into `plugins/`, their fixes marked `Local patch`. vis-gitsigns, vis-cursor and vis-oil are our own, and so is `plugins/style-compat.lua`, which picks the style calls for vis 0.9 or a later build\
 ~ vis-cursor and vis-oil depend on nothing else here: copy the folder into any vis config and `require` it
 
